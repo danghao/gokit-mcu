@@ -1,10 +1,10 @@
 /*******************************************************************************
-1¡¢±¾¹¤³ÌÊÇGoKitµÄ×îĞÂ°æ±¾¹¤³Ì£»
-2¡¢mcu¿ª·¢Õß¿ÉÒÔ¹ØĞÄprotocol.h ºÍ protocol.cÕâÁ½¸öÎÄ¼ş£»
-3¡¢ÓÃÓÚ´«ÊäµÄÍ¨ÓÃĞ­Òé£¨·ÇP0£©£¬mcu¿ª·¢Õß¿ÉÒÔ×î´ó³Ì¶ÈµÄ¸´ÓÃ´Ë¹¤³ÌÔ´Âë£»
-4¡¢mcu¿ª·¢ÕßÖØµã¹Ø×¢protocol.cÖĞµÄCmdSendMcuP0ºÍCmdReportModuleStatusÕâÁ½¸öº¯Êı£¨ĞèÒª¿ØÖÆÍâÉèºÍ´¦ÀíÍâÉè×´Ì¬£©£»
-5¡¢ÆäÓàÍ¨ÓÃµÄÍ¨Ñ¶Á÷³Ì£¬¿ÉÒÔ²»×ö¸Ä±ä»òÕßÌæ»»¸Ä±ä£»
-6¡¢ÓĞÈÎºÎÎÊÌâ¿ÉÒÔ¹Ø×¢»úÖÇÔÆ¿ª·¢ÕßÂÛÌ³£»
+1ã€æœ¬å·¥ç¨‹æ˜¯GoKitçš„æœ€æ–°ç‰ˆæœ¬å·¥ç¨‹ï¼›
+2ã€mcuå¼€å‘è€…å¯ä»¥å…³å¿ƒprotocol.h å’Œ protocol.cè¿™ä¸¤ä¸ªæ–‡ä»¶ï¼›
+3ã€ç”¨äºä¼ è¾“çš„é€šç”¨åè®®ï¼ˆéP0ï¼‰ï¼Œmcuå¼€å‘è€…å¯ä»¥æœ€å¤§ç¨‹åº¦çš„å¤ç”¨æ­¤å·¥ç¨‹æºç ï¼›
+4ã€mcuå¼€å‘è€…é‡ç‚¹å…³æ³¨protocol.cä¸­çš„CmdSendMcuP0å’ŒCmdReportModuleStatusè¿™ä¸¤ä¸ªå‡½æ•°ï¼ˆéœ€è¦æ§åˆ¶å¤–è®¾å’Œå¤„ç†å¤–è®¾çŠ¶æ€ï¼‰ï¼›
+5ã€å…¶ä½™é€šç”¨çš„é€šè®¯æµç¨‹ï¼Œå¯ä»¥ä¸åšæ”¹å˜æˆ–è€…æ›¿æ¢æ”¹å˜ï¼›
+6ã€æœ‰ä»»ä½•é—®é¢˜å¯ä»¥å…³æ³¨æœºæ™ºäº‘å¼€å‘è€…è®ºå›ï¼›
 *******************************************************************************/
 
 #include <stm32f10x.h>
@@ -16,28 +16,28 @@
 #include "protocol.h"
 #include "hal_infrared.h"
 
-uint8_t 									get_one_package;							//ÅĞ¶ÏÊÇ·ñ½ÓÊÕµ½Ò»¸öÍêÕûµÄ´®¿ÚÊı¾İ°ü
-uint8_t 									uart_buf[256]; 								//´®¿Ú»º³åÇø
-uint16_t 									uart_Count=0;									//´®¿Ú»º³åÇøÊı¾İ³¤¶È
-uint8_t 									cmd_flag =0;									
-uint16_t 									cmd_len =0 ;		
-uint8_t 									wait_ack_time;								
-uint8_t 									check_status_time;
-uint8_t 									report_status_idle_time;
-uint32_t									SN;
-uint8_t 									cmd_flag1, cmd_flag2;
-uint32_t									wait_wifi_status;
+uint8_t 	get_one_package;	//åˆ¤æ–­æ˜¯å¦æ¥æ”¶åˆ°ä¸€ä¸ªå®Œæ•´çš„ä¸²å£æ•°æ®åŒ…
+uint8_t 	uart_buf[256]; 		//ä¸²å£ç¼“å†²åŒº
+uint16_t 	uart_Count=0;		//ä¸²å£ç¼“å†²åŒºæ•°æ®é•¿åº¦
+uint8_t 	cmd_flag =0;									
+uint16_t 	cmd_len =0 ;		
+uint8_t 	wait_ack_time;								
+uint8_t 	check_status_time;
+uint8_t 	report_status_idle_time;
+uint32_t	SN;
+uint8_t 	cmd_flag1, cmd_flag2;
+uint32_t	wait_wifi_status;
 
-pro_commonCmd							m_pro_commonCmd;							//Í¨ÓÃÃüÁî£¬ĞÄÌø¡¢ackµÈ¿ÉÒÔ¸´ÓÃ´ËÖ¡
-m2w_returnMcuInfo					m_m2w_returnMcuInfo;					//·µ»ØmcuĞÅÏ¢Ö¡
-m2w_setModule							m_m2w_setModule;							//ÅäÖÃÄ£¿éÖ¡
-w2m_controlMcu						m_w2m_controlMcu;							//¿ØÖÆÃüÁîÖ¡
-m2w_mcuStatus							m_m2w_mcuStatus;							//µ±Ç°×îĞÂµÄmcu×´Ì¬Ö¡
-m2w_mcuStatus							m_m2w_mcuStatus_reported;			//ÉÏ´Î·¢ËÍµÄmcu×´Ì¬£¬µ±Óë×îĞÂµÄmcu×´Ì¬²»Í¬Ê±£¬ĞèÒªÉÏ±¨£»
-w2m_reportModuleStatus		m_w2m_reportModuleStatus;			//wifiÄ£¿éÉÏ±¨×´Ì¬Ö¡
-pro_errorCmd							m_pro_errorCmd;								//´íÎóÃüÁîÖ¡
+pro_commonCmd			m_pro_commonCmd;		//é€šç”¨å‘½ä»¤ï¼Œå¿ƒè·³ã€ackç­‰å¯ä»¥å¤ç”¨æ­¤å¸§
+m2w_returnMcuInfo		m_m2w_returnMcuInfo;		//è¿”å›mcuä¿¡æ¯å¸§
+m2w_setModule			m_m2w_setModule;		//é…ç½®æ¨¡å—å¸§
+w2m_controlMcu			m_w2m_controlMcu;		//æ§åˆ¶å‘½ä»¤å¸§
+m2w_mcuStatus			m_m2w_mcuStatus;		//å½“å‰æœ€æ–°çš„mcuçŠ¶æ€å¸§
+m2w_mcuStatus			m_m2w_mcuStatus_reported;	//ä¸Šæ¬¡å‘é€çš„mcuçŠ¶æ€ï¼Œå½“ä¸æœ€æ–°çš„mcuçŠ¶æ€ä¸åŒæ—¶ï¼Œéœ€è¦ä¸ŠæŠ¥ï¼›
+w2m_reportModuleStatus		m_w2m_reportModuleStatus;	//wifiæ¨¡å—ä¸ŠæŠ¥çŠ¶æ€å¸§
+pro_errorCmd			m_pro_errorCmd;			//é”™è¯¯å‘½ä»¤å¸§
 
-int	McuStatusInit()
+int  McuStatusInit()
 {
 	SN = 0;
 	cmd_flag1 = 0;
@@ -50,17 +50,17 @@ int	McuStatusInit()
 	
 	memset(uart_buf, 0, 256);
 	
-	//³õÊ¼»¯Í¨ÓÃÃüÁîÖ¡£¬ÃüÁî×ÖºÍsnĞèÒª´«Èë£¬Ğ£ÑéºÍ·¢ËÍÇ°¼ÆËã£¬ÆäËûĞÅÏ¢ÏàÍ¬£»
+	//åˆå§‹åŒ–é€šç”¨å‘½ä»¤å¸§ï¼Œå‘½ä»¤å­—å’Œsnéœ€è¦ä¼ å…¥ï¼Œæ ¡éªŒå’Œå‘é€å‰è®¡ç®—ï¼Œå…¶ä»–ä¿¡æ¯ç›¸åŒï¼›
 	memset(&m_pro_commonCmd, 0, sizeof(pro_commonCmd));
 	m_pro_commonCmd.head_part.head[0] = 0xFF;
 	m_pro_commonCmd.head_part.head[1] = 0xFF;
 	m_pro_commonCmd.head_part.len = exchangeBytes(sizeof(pro_commonCmd) - 4);
 
-	//³õÊ¼»¯·µ»ØmcuĞÅÏ¢Ö¡£¬snºÍĞ£ÑéºÍĞèÒª¸ù¾İÊµ¼ÊÌîĞ´£»
+	//åˆå§‹åŒ–è¿”å›mcuä¿¡æ¯å¸§ï¼Œsnå’Œæ ¡éªŒå’Œéœ€è¦æ ¹æ®å®é™…å¡«å†™ï¼›
 	memset(&m_m2w_returnMcuInfo, 0, sizeof(m2w_returnMcuInfo));
 	m_m2w_returnMcuInfo.head_part.head[0] = 0xFF;
 	m_m2w_returnMcuInfo.head_part.head[1] = 0xFF;
-	//³¤¶ÈÖµ²»°üº¬°üÍ·ºÍ³¤¶È×Ö¶Î£¬ËùÒÔÒª¼õÈ¥4¸ö×Ö½Ú£»
+	//é•¿åº¦å€¼ä¸åŒ…å«åŒ…å¤´å’Œé•¿åº¦å­—æ®µï¼Œæ‰€ä»¥è¦å‡å»4ä¸ªå­—èŠ‚ï¼›
 	m_m2w_returnMcuInfo.head_part.len = exchangeBytes(sizeof(m2w_returnMcuInfo) - 4);			
 	m_m2w_returnMcuInfo.head_part.cmd = CMD_GET_MCU_INFO_ACK;
 	memcpy(m_m2w_returnMcuInfo.pro_ver, PRO_VER, 8);
@@ -68,10 +68,10 @@ int	McuStatusInit()
 	memcpy(m_m2w_returnMcuInfo.hard_ver, HARD_VER, 8);
 	memcpy(m_m2w_returnMcuInfo.soft_ver, SOFT_VER, 8);
 	memcpy(m_m2w_returnMcuInfo.product_key, PRODUCT_KEY, 32);
-	//binable_timeÄ¬ÈÏ0£¬¿ÉÒÔËæÊ±±»°ó¶¨£»
+	//binable_timeé»˜è®¤0ï¼Œå¯ä»¥éšæ—¶è¢«ç»‘å®šï¼›
 	m_m2w_returnMcuInfo.binable_time = 0;																		
 		
-	//³õÊ¼»¯mcu×´Ì¬Ö¡£¬snºÍĞ£ÑéºÍĞèÒª¸ù¾İÊµ¼ÊÌîĞ´£»
+	//åˆå§‹åŒ–mcuçŠ¶æ€å¸§ï¼Œsnå’Œæ ¡éªŒå’Œéœ€è¦æ ¹æ®å®é™…å¡«å†™ï¼›
 	memset(&m_m2w_mcuStatus, 0, sizeof(m2w_mcuStatus));
 	m_m2w_mcuStatus.head_part.head[0] = 0xFF;
 	m_m2w_mcuStatus.head_part.head[1] = 0xFF;
@@ -79,14 +79,14 @@ int	McuStatusInit()
 	DHT11_Read_Data((uint8_t *)&(m_m2w_mcuStatus.status_r.temputure), (uint8_t *)&(m_m2w_mcuStatus.status_r.humidity));
 	m_m2w_mcuStatus.status_w.motor_speed = 5;
 	
-	//³õÊ¼»¯ÅäÖÃwifiÄ£¿éÖ¡£¬snºÍĞ£ÑéºÍĞèÒª¸ù¾İÊµ¼ÊÌîĞ´£»
+	//åˆå§‹åŒ–é…ç½®wifiæ¨¡å—å¸§ï¼Œsnå’Œæ ¡éªŒå’Œéœ€è¦æ ¹æ®å®é™…å¡«å†™ï¼›
 	memset(&m_m2w_setModule, 0, sizeof(m2w_setModule));
 	m_m2w_setModule.head_part.head[0] = 0xFF;
 	m_m2w_setModule.head_part.head[1] = 0xFF;
 	m_m2w_setModule.head_part.cmd = CMD_SET_MODULE_WORKMODE;
 	m_m2w_setModule.head_part.len = exchangeBytes(sizeof(m2w_setModule) - 4);
 
-	//³õÊ¼»¯´íÎóÃüÁîÖ¡£¬snºÍĞ£ÑéºÍĞèÒª¸ù¾İÊµ¼ÊÌîĞ´£»
+	//åˆå§‹åŒ–é”™è¯¯å‘½ä»¤å¸§ï¼Œsnå’Œæ ¡éªŒå’Œéœ€è¦æ ¹æ®å®é™…å¡«å†™ï¼›
 	memset(&m_pro_errorCmd, 0, sizeof(pro_errorCmd));
 	m_pro_errorCmd.head_part.head[0] = 0xFF;
 	m_pro_errorCmd.head_part.head[1] = 0xFF;
@@ -98,31 +98,31 @@ int	McuStatusInit()
 
 int main(void)
 {
-	//ÏµÍ³³õÊ¼»¯
+	//ç³»ç»Ÿåˆå§‹åŒ–
 	SystemInit();
  	UART_Configuration();
 	delay_init();	
 	KEY_GPIO_Init();
 	TIM3_Int_Init(100,7199);
 	
-	//Ó¦ÓÃ³õÊ¼»¯£¬°üÀ¨µç»ú¡¢LED¡¢ÎÂÊª¶È¡¢ºìÍâ£»
+	//åº”ç”¨åˆå§‹åŒ–ï¼ŒåŒ…æ‹¬ç”µæœºã€LEDã€æ¸©æ¹¿åº¦ã€çº¢å¤–ï¼›
 	Motor_Init();	
 	RGB_LED_Init();
 	DHT11_Init();
 	IR_Init();
 	
-	//³õÊ¼»¯¸÷ÀàĞÍÊı¾İÖ¡
+	//åˆå§‹åŒ–å„ç±»å‹æ•°æ®å¸§
 	McuStatusInit();
 
 	while(1)
 	{
-		//´¦ÀíÀ´×ÔÓÚ´®¿ÚµÄÊı¾İÖ¡
+		//å¤„ç†æ¥è‡ªäºä¸²å£çš„æ•°æ®å¸§
 		MessageHandle();
 		
-		//´¦ÀíÀ´×ÔÓÚ°´¼üµÄÊÂ¼ş
+		//å¤„ç†æ¥è‡ªäºæŒ‰é”®çš„äº‹ä»¶
 		KeyHandle(); 		
 
-		//¼ì²éÏµÍ³×îĞÂ×´Ì¬
+		//æ£€æŸ¥ç³»ç»Ÿæœ€æ–°çŠ¶æ€
 		CheckStatus();	
  	}				
 }
